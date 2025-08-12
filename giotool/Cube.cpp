@@ -10,12 +10,12 @@
 class Model : public Entity3D {
 public:
     constexpr static int faces[6][4] = {
-        {7, 6, 2, 3}, //down
-        {2, 6, 5, 1}, //east
-        {3, 2, 1, 0}, //north
-        {6, 7, 4, 5}, //south
-        {0, 1, 5, 4}, //up
-        {7, 3, 0, 4}, //west
+        {3, 2, 6, 7}, // down (was {7,6,2,3})
+        {6, 2, 1, 5}, // east (was {2,6,5,1})
+        {2, 3, 0, 1}, // north (was {3,2,1,0})
+        {7, 6, 5, 4}, // south (was {6,7,4,5})
+        {4, 5, 1, 0}, // up (was {0,1,5,4})
+        {3, 7, 4, 0}, // west (was {7,3,0,4})
     };
 
     Vector3f position;

@@ -17,7 +17,7 @@ public:
     static bool shouldCull(Vector2f a, Vector2f b, Vector2f c) {
         return
             (b.x - a.x) * (c.y - a.y) -
-            (c.x - a.x) * (b.y - a.y) <= 0;
+            (c.x - a.x) * (b.y - a.y) >= 0;
     };
 
     void prepare(
