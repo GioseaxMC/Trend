@@ -16,16 +16,26 @@ int main() {
         window.setView(View(Vector2f{0,0}, Vector2f{1290, 720}));
     
     TextureArchive texs;
-    Texture& texture = texs.createTextureFromFile("data/image.png");
+    ModelArchive models = texs;
 
     Camera camera;
     Clock clock;
     Scene3D scene(window, camera);
+    
+    const string model = "models/block.json";
 
-    scene.addEntity(Cube(Vector3f(100,10,100), texture));
-    scene.addEntity(Cube(Vector3f(100,10,-100), texture));
-    scene.addEntity(Cube(Vector3f(-100,10,100), texture));
-    scene.addEntity(Cube(Vector3f(-100,10,-100), texture));
+    scene.addEntity(
+        Model(
+            Vector3f(-100,-100,100),
+            models.createModel(model)
+        )
+    );
+    scene.addEntity(
+        Model(
+            Vector3f(100,-100,-100),
+            models.createModel(model)
+        )
+    );
 
     while (window.isOpen()) {
         float elapsed = clock.restart().asSeconds();
@@ -38,7 +48,7 @@ int main() {
         
         camera.move(delta);
         
-        window.clear(Color::Cyan);
+        window.clear(Color::White);
         scene.draw();
         window.display();
     }

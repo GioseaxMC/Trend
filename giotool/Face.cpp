@@ -7,6 +7,7 @@ public:
         Texture* tex;
         Vector2f pos[4];
         float depths[4];
+        Vector2f uv[4];
     };
     
     vector<FaceInfo> faces;
@@ -16,11 +17,14 @@ public:
     static bool shouldCull(Vector2f a, Vector2f b, Vector2f c) {
         return
             (b.x - a.x) * (c.y - a.y) -
-            (c.x - a.x) * (b.y - a.y) >= 0;
+            (c.x - a.x) * (b.y - a.y) <= 0;
     };
 
-    void prepare(Camera& camera,
-                Vector3f points[4], Texture& texture) {
+    void prepare(
+    Camera& camera,
+    Vector3f points[4],
+    Texture& texture,
+    Vector2f uv[4]) {
         Vector2f screenPos[4];
         float depth[4];
         for (int i=0; i<4; ++i) {
@@ -38,6 +42,7 @@ public:
         for (int i=0; i<4; ++i) {
             faceInfo.pos[i]    = screenPos[i];
             faceInfo.depths[i] = depth[i];
+            faceInfo.uv[i] = uv[i];
         }
 
         faces.emplace_back(faceInfo);
@@ -57,15 +62,8 @@ public:
                 *min_element(y.depths, y.depths+4) > 0;
             }
         );
-        for (auto& [texture, screenPos, depths] : faces) {
+        for (auto& [texture, screenPos, depths, uvCoords] : faces) {
             sf::VertexArray va(sf::Quads, 4);
-            
-            Vector2f uvCoords[4] = {
-                {0.f, 1.f},  // Bottom-left
-                {1.f, 1.f},  // Bottom-right
-                {1.f, 0.f},  // Top-right
-                {0.f, 0.f},  // Top-left
-            };
             
             for (int i = 0; i < 4; ++i) {
                 float w = depths[i];
@@ -83,7 +81,6 @@ public:
             
             Shader* shader = perspectiveShader.get();
             shader->setUniform("tex", *texture);
-            
             window.draw(va, shader);
         }
         faces.clear();

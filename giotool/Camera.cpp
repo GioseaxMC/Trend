@@ -59,6 +59,8 @@ public:
     };
 
     Vector2f worldToScreen(Vector3f coords) {
+        coords.z = -coords.z;
+        coords.y = -coords.y;
         coords -= position;
         
         Vector3f oc = coords;
@@ -88,6 +90,8 @@ public:
     };
 
     float getDepth(Vector3f coords) {
+        coords.z = -coords.z;
+        coords.y = -coords.y;
         coords -= position;
         float depth = cos_y * coords.z + sin_y * coords.x;
         depth = cos_x * depth - sin_x * coords.y;

@@ -2,16 +2,21 @@
 
 class TextureArchive {
 public:
-    vector<unique_ptr<Texture>> container;
+    unordered_map<string, unique_ptr<Texture>> container;
 
     TextureArchive() {};
 
     sf::Texture& createTextureFromFile(const string& fname) {
-        container.emplace_back(make_unique<Texture>());
 
-        sf::Texture& tex = *container.back();
+        if (container.find(fname) != container.end()) {
+            return *container[fname];
+        }
 
-        if (!tex.loadFromFile(fname)) {
+        container[fname] = make_unique<Texture>();
+
+        sf::Texture& tex = *container[fname];
+
+        if (!tex.loadFromFile(fname+".png")) {
             if (!tex.loadFromFile("data/default.png")) {
                 exit(-1);
             }
