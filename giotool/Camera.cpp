@@ -2,7 +2,7 @@
 
 class Camera {
 public:
-    Vector3i position;
+    Vector3f position;
     Vector2f direction;
     // RenderWindow& window;
     float nearPlane;
@@ -13,10 +13,9 @@ public:
     float cos_y = cos(direction.y);
 
     Camera():
-        position  (Vector3i(1,0,1)),
+        position  (Vector3f(1,0,1)),
         direction (Vector2f(0,0)),
-        // window (theWindow),
-        nearPlane (200)
+        nearPlane (400)
     {
         sin_x = sin(direction.x);
         sin_y = sin(direction.y);
@@ -35,50 +34,64 @@ public:
         float dirY = Keyboard::isKeyPressed(Keyboard::Right) - 
             Keyboard::isKeyPressed(Keyboard::Left);
 
-        int speed = 10;
+        float speed = 10;
         float dirSpeed = 0.1;
+        
+        direction += Vector2f(dirSpeed*dirX*dt, dirSpeed*dirY*dt);
+        direction.x = min(3.14f/2, max(-3.14f/2, direction.x));
 
-        sin_x = sin(direction.x);
-        sin_y = sin(direction.y);
-        cos_x = cos(direction.x);
-        cos_y = cos(direction.y);
+        if (dirX or dirY) {
+            sin_x = sin(direction.x);
+            sin_y = sin(direction.y);
+            cos_x = cos(direction.x);
+            cos_y = cos(direction.y);
+        }
         
         float movementX = inputX*speed*dt;
         float movementY = inputY*speed*dt;
-        position += Vector3i(
+        position += Vector3f(
             (movementX*cos_y+
             +movementY*sin_y),
             0,
             (movementY*cos_y+
             -movementX*sin_y)
         );
-        direction += Vector2f(dirSpeed*dirX*dt, dirSpeed*dirY*dt);
     };
 
-    Vector2f worldToScreen(Vector3i coords) {
+    Vector2f worldToScreen(Vector3f coords) {
         coords -= position;
         
-        Vector3i oc = coords;
+        Vector3f oc = coords;
 
         coords.x = cos_y * oc.x - sin_y * oc.z;
         coords.z = cos_y * oc.z + sin_y * oc.x;
+        
+        oc = coords;
+
+        coords.y = cos_x * oc.y + sin_x * oc.z;
+        coords.z = cos_x * oc.z - sin_x * oc.y;
+
+        #define NEW_DEPTH abs(depth)
 
         float depth = coords.z;
-        if (depth >= 0) return Vector2f(
-            (coords.x) * nearPlane / depth,
-            (coords.y) * nearPlane / depth
-        );
+        if (depth >= 0) {
+            depth = max(depth, 0.01f);
+            return Vector2f(
+                (coords.x) * nearPlane / depth,
+                (coords.y) * nearPlane / depth
+            );
+        }
         else return Vector2f(
-            (coords.x) * nearPlane * abs(depth),
-            (coords.y) * nearPlane * abs(depth)
+            (coords.x) * nearPlane * NEW_DEPTH,
+            (coords.y) * nearPlane * NEW_DEPTH
         );
     };
 
-    float getDepth(Vector3i coords) {
+    float getDepth(Vector3f coords) {
         coords -= position;
-        // float depth = coords.z;
         float depth = cos_y * coords.z + sin_y * coords.x;
-        if (depth >= 0) return depth;
-        else return abs(1/depth);
+        depth = cos_x * depth - sin_x * coords.y;
+        if (depth >= 0) {depth=max(depth, 0.01f); return depth; }
+        else return 1/(NEW_DEPTH);
     };
 };

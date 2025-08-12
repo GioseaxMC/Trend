@@ -5,6 +5,13 @@
 #include <memory>
 #include <math.h>
 
+#ifdef INCLUDE_JSON
+// #include "giotool/thirdparty/json.cpp"
+// using json = nlohmann::json;
+#include "giotool/thirdparty/json11.cpp"
+namespace json = json11;
+#endif
+
 using namespace sf;
 
 #ifdef USE_NAMESPACES
@@ -18,22 +25,25 @@ using namespace std;
 #define in ,
 #define dtFps 60
 #define dtExp (1.0f / dtFps)
-#define elapsedMax (1.0f / FPS*2)
+#define elapsedMax (1.0f / FPS*3)
 #define elapsedMin (1.0f / FPS*0.5)
 #define makeDelta(elapsed) (min(elapsedMax, elapsed) / dtExp)
 
 #define handle_events_for(...) handle_events_exp(handle_events_for_impl, (__VA_ARGS__))
 #define handle_events_exp(X, A) X A
-#define handle_events_for_impl(X, B) sf::Event X; while (B.pollEvent(X))
+#define handle_events_for_impl(X, B) \
+    sf::Event X; while (B.pollEvent(X))
 
 #define setScaleXY(xx) setScale(xx, xx)
 
 #define $notnull(statement)  if ( statement)
 #define  $isnull(statement)  if (!statement)
 
+
 #include "giotool/PerspectiveShader.cpp"
+#include "giotool/TextureArchive.cpp"
 #include "giotool/Camera.cpp"
-#include "giotool/Entity3D.cpp"
 #include "giotool/Face.cpp"
+#include "giotool/Entity3D.cpp"
 #include "giotool/Cube.cpp"
 #include "giotool/Scene3D.cpp"

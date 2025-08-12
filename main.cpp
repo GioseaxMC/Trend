@@ -1,4 +1,5 @@
 #define USE_NAMESPACES
+#define INCLUDE_JSON
 
 #include <iostream>
 #include "giotool.hpp"
@@ -14,16 +15,17 @@ int main() {
         window.setFramerateLimit(FPS);
         window.setView(View(Vector2f{0,0}, Vector2f{1290, 720}));
     
-    Texture texture;
-    texture.loadFromFile("image.png");
+    TextureArchive texs;
+    Texture& texture = texs.createTextureFromFile("data/image.png");
 
     Camera camera;
     Clock clock;
     Scene3D scene(window, camera);
-    scene.addEntity(Cube(Vector3i(100,10,100), texture));
-    scene.addEntity(Cube(Vector3i(100,10,-100), texture));
-    scene.addEntity(Cube(Vector3i(-100,10,100), texture));
-    scene.addEntity(Cube(Vector3i(-100,10,-100), texture));
+
+    scene.addEntity(Cube(Vector3f(100,10,100), texture));
+    scene.addEntity(Cube(Vector3f(100,10,-100), texture));
+    scene.addEntity(Cube(Vector3f(-100,10,100), texture));
+    scene.addEntity(Cube(Vector3f(-100,10,-100), texture));
 
     while (window.isOpen()) {
         float elapsed = clock.restart().asSeconds();
@@ -34,11 +36,9 @@ int main() {
                 window.close();
         }
         
-
         camera.move(delta);
-        cout << "Direction: X: " << camera.direction.x << " Y: " << camera.direction.y << "\n";
         
-        window.clear(Color::White);
+        window.clear(Color::Cyan);
         scene.draw();
         window.display();
     }

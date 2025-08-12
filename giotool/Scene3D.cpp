@@ -3,6 +3,7 @@ public:
     Camera& camera;
     vector<unique_ptr<Entity3D>> entities;
     RenderWindow& window;
+    FaceRenderer fr;
 
     Scene3D(RenderWindow& theWindow, Camera& theCamera):
         camera(theCamera),
@@ -16,7 +17,8 @@ public:
 
     void draw() {
         for(auto& entity : entities) {
-            entity->draw(window, camera);
+            entity->draw(camera, fr);
         }
+        fr.draw(window);
     };
 };
