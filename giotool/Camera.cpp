@@ -15,7 +15,7 @@ public:
     Camera():
         position  (Vector3f(1,0,1)),
         direction (Vector2f(0,0)),
-        nearPlane (400)
+        nearPlane (200)
     {
         sin_x = sin(direction.x);
         sin_y = sin(direction.y);
@@ -57,35 +57,29 @@ public:
             -movementX*sin_y)
         );
     };
-
-    Vector2f worldToScreen(Vector3f coords) {
+    
+    Vector3f worldToClip(Vector3f coords) {
         coords.z = -coords.z;
         coords.y = -coords.y;
         coords -= position;
-        
+
         Vector3f oc = coords;
 
         coords.x = cos_y * oc.x - sin_y * oc.z;
         coords.z = cos_y * oc.z + sin_y * oc.x;
-        
+
         oc = coords;
 
         coords.y = cos_x * oc.y + sin_x * oc.z;
         coords.z = cos_x * oc.z - sin_x * oc.y;
+        return coords;
+    }
 
-        #define NEW_DEPTH abs(depth)
-
+    Vector2f clipToScreen(Vector3f coords) {
         float depth = coords.z;
-        if (depth >= 0) {
-            depth = max(depth, 0.01f);
-            return Vector2f(
-                (coords.x) * nearPlane / depth,
-                (coords.y) * nearPlane / depth
-            );
-        }
-        else return Vector2f(
-            (coords.x) * nearPlane * NEW_DEPTH,
-            (coords.y) * nearPlane * NEW_DEPTH
+        return Vector2f(
+            (coords.x) * nearPlane / depth,
+            (coords.y) * nearPlane / depth
         );
     };
 
@@ -95,7 +89,6 @@ public:
         coords -= position;
         float depth = cos_y * coords.z + sin_y * coords.x;
         depth = cos_x * depth - sin_x * coords.y;
-        if (depth >= 0) {depth=max(depth, 0.01f); return depth; }
-        else return 1/(NEW_DEPTH);
+        return depth; 
     };
 };

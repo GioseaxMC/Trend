@@ -26,7 +26,7 @@ int main() {
 
     scene.addEntity(
         Model(
-            Vector3f(100,-200,-100),
+            Vector3f(100,-120,100),
             models.createModel(model)
         )
     );
